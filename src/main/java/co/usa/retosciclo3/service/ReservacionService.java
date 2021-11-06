@@ -2,12 +2,18 @@ package co.usa.retosciclo3.service;
 
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import co.usa.retosciclo3.model.Reservacion;
+import co.usa.retosciclo3.model.reportes.ContClientes;
+import co.usa.retosciclo3.model.reportes.ContEstClientes;
 import co.usa.retosciclo3.repository.ReservacionRepository;
 
 @Service
@@ -63,6 +69,37 @@ public class ReservacionService {
 
         }
         return false;
+    }
+
+    public List<ContClientes> getTopClientes() {
+        return ReservacionRepository.getTopClientes();
+    }
+
+    public ContEstClientes getReporteEstados() {
+        List<Reservacion> completas = ReservacionRepository.getReservacionPorStatus("completed");
+        List<Reservacion> canceladas = ReservacionRepository.getReservacionPorStatus("cancelled");
+
+        ContEstClientes reporteEstado = new ContEstClientes(completas.size(), canceladas.size());
+
+        return reporteEstado;
+    }
+
+    public List<Reservacion> getReservacionFechas(String fecha1, String fecha2) {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Date dateOne = new Date();
+        Date dateTwo = new Date();
+
+        try {
+            dateOne = format.parse(fecha1);
+            dateTwo = format.parse(fecha2);
+        } catch (ParseException c) {
+            c.printStackTrace();
+        }
+        if (dateOne.before(dateTwo)) {
+            return ReservacionRepository.getReservacionesFechas(dateOne, dateTwo);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
 }

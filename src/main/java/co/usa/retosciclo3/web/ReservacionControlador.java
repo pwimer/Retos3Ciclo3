@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.http.HttpStatus;
 
 import co.usa.retosciclo3.model.Reservacion;
+import co.usa.retosciclo3.model.reportes.ContClientes;
+import co.usa.retosciclo3.model.reportes.ContEstClientes;
 import co.usa.retosciclo3.service.ReservacionService;
 
 @RestController
@@ -55,6 +57,24 @@ public class ReservacionControlador {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public boolean deleteReservacion(@PathVariable("numId") int numId) {
         return ReservacionService.deleteReservacion(numId);
+    }
+
+    @GetMapping("/report-status")
+    public ContEstClientes getReporteEstados() {
+        return ReservacionService.getReporteEstados();
+    }
+
+    @GetMapping("/report-clients")
+    public List<ContClientes> getTopClientes() {
+        return ReservacionService.getTopClientes();
+    }
+
+    @GetMapping("/report-dates/{dateOne}/{dateTwo}")
+
+    public List<Reservacion> getClienteFechas(@PathVariable("dateOne") String fecha1,
+            @PathVariable("dateTwo") String fecha2) {
+        return ReservacionService.getReservacionFechas(fecha1, fecha2);
+
     }
 
 }
